@@ -6,6 +6,9 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/jonasvictor/CRUD-Pessoa-Fisica/dominio"
+	"github.com/jonasvictor/CRUD-Pessoa-Fisica/dominio/pessoa"
 )
 
 func main() {

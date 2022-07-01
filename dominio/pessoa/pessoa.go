@@ -32,6 +32,7 @@ func NovoServico(dbFilePath string) (Servico, error) {
 		}
 	}
 
+	// Se existir, leio o arquivo e atualizo a variável 'pessoas' do serviço com as pessoas do arquivo
 	jsonArquivo, err := os.Open(dbFilePath)
 	if err != nil {
 		return Servico{}, fmt.Errorf("Erro ao tentar abrir arquivo que contém todas as pessoas: %s", err.Error())
@@ -49,7 +50,6 @@ func NovoServico(dbFilePath string) (Servico, error) {
 		dbFilePath: dbFilePath,
 		pessoas:    todasPessoas,
 	}, nil
-	// Se existir, leio o arquivo e atualizo a variável 'pessoas' do serviço com as pessoas do arquivo
 
 }
 
@@ -72,7 +72,7 @@ func criaArquivoVazio(dbFilePath string) error {
 }
 
 func (s *Servico) Create(pessoa dominio.Pessoa) error {
-	// Verificar se a pessoa já existe, se já existe então retorno erro
+	// Verificar se a pessoa já existe, se já existe então retorna um erro
 	if s.existe(pessoa) {
 		return fmt.Errorf("Erro ao tentar criar pessoa. Já existe uma pessoa com este ID cadastrada")
 	}
