@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 
 	"github.com/jonasvictor/CRUD-Pessoa-Fisica/dominio"
 )
@@ -71,10 +72,24 @@ func criaArquivoVazio(dbFilePath string) error {
 
 }
 
+func (s Servico) quantDigitos(pessoa dominio.Pessoa) bool {
+	digitosTelefone := strconv.Itoa(pessoa.Telefone)
+	if pessoa.Telefone != 0 {
+		if len(digitosTelefone) != 11 {
+			return true
+		}
+	}
+	return false
+}
+
 func (s *Servico) Create(pessoa dominio.Pessoa) error {
 	// Verificar se a pessoa já existe, se já existe então retorna um erro
 	if s.existe(pessoa) {
-		return fmt.Errorf("Erro ao tentar criar pessoa. Já existe uma pessoa com este ID cadastrada")
+		return fmt.Errorf("Erro ao tentar criar pessoa. Já existe uma pessoa com este ID cadastrado")
+	}
+	// Verifica qunatidade de números inseridos em telefone
+	if s.quantDigitos(pessoa) {
+		return fmt.Errorf("Erro ao tentar criar pessoa. Número de telefone incompleto/incorreto")
 	}
 
 	// Adiciona a pessoa na slice de pessoas

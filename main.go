@@ -48,8 +48,8 @@ func main() {
 			// Lista todas as pessoas cadastradas
 			path := strings.TrimPrefix(r.URL.Path, "/pessoa/")
 			if path == "" {
-				w.WriteHeader(http.StatusOK)
 				w.Header().Set("Content-type", "application/json") // Antes de codar
+				w.WriteHeader(http.StatusOK)
 				pessoas := sercicoPessoa.List()
 				err := json.NewEncoder(w).Encode(pessoas)
 				if err != nil {

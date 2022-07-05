@@ -6,7 +6,7 @@ type Pessoa struct {
 	Endereco       string `json:"endereco"`
 	DataNascimento string `json:"data-de-nascimento"` //time
 	Cpf            string `json:"cpf"`                //int
-	Telefone       string `json:"telefone"`           //int
+	Telefone       int    `json:"telefone"`           //int
 }
 
 type Pessoas struct {
