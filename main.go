@@ -14,29 +14,30 @@ import (
 func main() {
 	sercicoPessoa, err := pessoa.NovoServico("pessoa.json")
 	if err != nil {
-		fmt.Println("Erro ao tentar cadastrar pessoa")
+		fmt.Printf("Erro ao tentar cadastrar pessoa: %s\n", err.Error())
 		return
 	}
 
 	http.HandleFunc("/pessoa/", func(w http.ResponseWriter, r *http.Request) {
+
 		if r.Method == "POST" {
 			var pessoa dominio.Pessoa
 			err := json.NewDecoder(r.Body).Decode(&pessoa)
 			if err != nil {
-				fmt.Printf("Erro ao tentar decodificar. O corpo deve ser um json. Erro: %s", err.Error())
+				fmt.Printf("Erro ao tentar decodificar. O corpo deve ser um json. Erro: %s\n", err.Error())
 				http.Error(w, "Erro ao tentar cadastrar pessoa", http.StatusBadRequest)
 				return
 			}
 
 			if pessoa.ID <= 0 {
-				http.Error(w, "Erro ao tentar cadastrar a pessoa, ID deve ser um número inteiro positivo", http.StatusBadRequest)
+				http.Error(w, "O ID da pessoa deve ser um número inteiro positivo", http.StatusBadRequest)
 				return
 			}
 
 			// Criar pessoa
 			err = sercicoPessoa.Create(pessoa)
 			if err != nil {
-				fmt.Printf("Erro ao tentar criar pessoa:%s", err.Error())
+				fmt.Printf("Erro ao tentar criar pessoa: %s\n", err.Error())
 				http.Error(w, "Erro ao tentar criar pessoa", http.StatusInternalServerError)
 				return
 			}
@@ -44,14 +45,41 @@ func main() {
 			w.WriteHeader(http.StatusCreated)
 			return
 		}
+
+		if r.Method == "PUT" {
+			var pessoa dominio.Pessoa
+			err := json.NewDecoder(r.Body).Decode(&pessoa)
+			if err != nil {
+				fmt.Printf("O corpo deve ser um json. Erro: %s\n", err.Error())
+				http.Error(w, "Erro ao tentar criar pessoa", http.StatusBadRequest)
+				return
+			}
+
+			if pessoa.ID <= 0 {
+				http.Error(w, "O ID da pessoa deve ser um número inteiro positivo", http.StatusBadRequest)
+				return
+			}
+
+			// Atualizar/Editar cadastro das pessoas
+			err = sercicoPessoa.Update(pessoa)
+			if err != nil {
+				fmt.Printf("Erro ao tentar atualizar a pessoa: %s\n", err.Error())
+				http.Error(w, "Erro ao tentar atualizar pessoa", http.StatusInternalServerError)
+				return
+			}
+
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
 		if r.Method == "GET" {
 			// Lista todas as pessoas cadastradas
 			path := strings.TrimPrefix(r.URL.Path, "/pessoa/")
 			if path == "" {
-				w.Header().Set("Content-type", "application/json") // Antes de codar
+				w.Header().Set("Content-Type", "application/json") // Antes de codar
 				w.WriteHeader(http.StatusOK)
-				pessoas := sercicoPessoa.List()
-				err := json.NewEncoder(w).Encode(pessoas)
+
+				err := json.NewEncoder(w).Encode(sercicoPessoa.List())
 				if err != nil {
 					http.Error(w, "Erro ao tentar listar pessoas", http.StatusInternalServerError)
 					return
@@ -69,41 +97,16 @@ func main() {
 					http.Error(w, err.Error(), http.StatusNotFound)
 					return
 				}
+				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				w.Header().Set("Content-type", "application/json")
 				err = json.NewEncoder(w).Encode(pessoa)
 				if err != nil {
-					http.Error(w, "Erro ao tentar codificar pessoa como json", http.StatusInternalServerError)
+					http.Error(w, "Erro ao tentar encontrar pessoa", http.StatusInternalServerError)
 					return
 				}
 			}
+			return
 
-		}
-
-		if r.Method == "PUT" {
-			var pessoa dominio.Pessoa
-			err := json.NewDecoder(r.Body).Decode(&pessoa)
-			if err != nil {
-				fmt.Printf("Erro ao tentar decodificar. O corpo deve ser um json. Erro: %s", err.Error())
-				http.Error(w, "Erro ao tentar criar pessoa", http.StatusBadRequest)
-				return
-			}
-
-			if pessoa.ID <= 0 {
-				http.Error(w, "Erro ao tentar cadastrar a pessoa, ID deve ser um número inteiro positivo", http.StatusBadRequest)
-				return
-			}
-
-			// Atualizar/Editar cadastro das pessoas
-			err = sercicoPessoa.Update(pessoa)
-			if err != nil {
-				fmt.Printf("Erro ao tentar atualizar pessoa: %s", err.Error())
-				http.Error(w, "Erro ao tentar atualizar pessoa", http.StatusInternalServerError)
-				return
-			}
-
-			w.WriteHeader(http.StatusOK)
-			//return
 		}
 
 		if r.Method == "DELETE" {
@@ -120,14 +123,15 @@ func main() {
 				// Delete pessoa
 				err = sercicoPessoa.DeleteByID(pessoaID)
 				if err != nil {
-					fmt.Printf("Erro ao tentar deletar o cadastro da pessoa: %s", err.Error())
-					http.Error(w, "Erro ao tentar deletar o cadastro da pessoa", http.StatusInternalServerError)
+					fmt.Printf("Erro ao tentar deletar o cadastro da pessoa: %s\n", err.Error())
+					http.Error(w, "Erro ao tentar deletar a pessoa", http.StatusInternalServerError)
 					return
 				}
 
 				w.WriteHeader(http.StatusOK)
 
 			}
+			return
 
 		}
 

@@ -30,18 +30,20 @@ func NovoServico(dbFilePath string) (Servico, error) {
 				pessoas:    dominio.Pessoas{},
 			}, nil
 
+		} else {
+			return Servico{}, err
 		}
 	}
 
 	// Se existir, leio o arquivo e atualizo a variável 'pessoas' do serviço com as pessoas do arquivo
 	jsonArquivo, err := os.Open(dbFilePath)
 	if err != nil {
-		return Servico{}, fmt.Errorf("Erro ao tentar abrir arquivo que contém todas as pessoas: %s", err.Error())
+		return Servico{}, fmt.Errorf("Erro ao tentar abrir arquivo que contém todas as pessoas: %s\n", err.Error())
 	}
 
 	jsonArquivoByte, err := ioutil.ReadAll(jsonArquivo)
 	if err != nil {
-		return Servico{}, fmt.Errorf("Erro ao tentar ler o arquivo: %s", err.Error())
+		return Servico{}, fmt.Errorf("Erro ao tentar ler o arquivo: %s\n", err.Error())
 	}
 
 	var todasPessoas dominio.Pessoas
@@ -60,16 +62,23 @@ func criaArquivoVazio(dbFilePath string) error {
 	}
 	pessoasJSON, err := json.Marshal(pessoas)
 	if err != nil {
-		return fmt.Errorf("Erro ao tentar codificar pessoas como JSON?: %s", err.Error())
+		return fmt.Errorf("Erro ao tentar codificar pessoas como JSON: %s\n", err.Error())
 	}
 
 	err = ioutil.WriteFile(dbFilePath, pessoasJSON, 0755)
 	if err != nil {
-		return fmt.Errorf("Erro ao tentar gravar no arquivo. Erro: %s", err.Error())
+		return fmt.Errorf("Erro ao tentar gravar no arquivo. Erro: %s\n", err.Error())
 	}
 
 	return nil
 
+}
+
+func (s Servico) campoVazio(pessoa dominio.Pessoa) bool {
+	if pessoa.NomeCompleto == "" || pessoa.Endereco == "" || pessoa.DataNascimento == "" || pessoa.Cpf == "" || pessoa.Telefone == 0 {
+		return true
+	}
+	return false
 }
 
 func (s Servico) quantDigitos(pessoa dominio.Pessoa) bool {
@@ -87,6 +96,10 @@ func (s *Servico) Create(pessoa dominio.Pessoa) error {
 	if s.existe(pessoa) {
 		return fmt.Errorf("Erro ao tentar criar pessoa. Já existe uma pessoa com este ID cadastrado")
 	}
+	if s.campoVazio(pessoa) {
+		return fmt.Errorf("Erro ao tentar criar pessoa, dados insuficientes")
+	}
+
 	// Verifica qunatidade de números inseridos em telefone
 	if s.quantDigitos(pessoa) {
 		return fmt.Errorf("Erro ao tentar criar pessoa. Número de telefone incompleto/incorreto")
@@ -117,7 +130,7 @@ func (s Servico) existe(pessoa dominio.Pessoa) bool {
 func (s Servico) salvaArquivo() error {
 	todasPessoasJSON, err := json.Marshal(s.pessoas)
 	if err != nil {
-		return fmt.Errorf("Error trying to encode people as json: %s", err.Error())
+		return fmt.Errorf("Erro ao tentar codificar pessoas como json: %s", err.Error())
 	}
 	return ioutil.WriteFile(s.dbFilePath, todasPessoasJSON, 0755)
 }
@@ -144,7 +157,7 @@ func (s *Servico) Update(pessoa dominio.Pessoa) error {
 		}
 	}
 	if indexUpdate < 0 {
-		return fmt.Errorf("Não há nenhuma pessoa com o ID fornecido em nosso banco de dados")
+		return fmt.Errorf("Não há pessoa com o ID fornecido")
 	}
 
 	s.pessoas.Pessoas[indexUpdate] = pessoa
@@ -161,10 +174,13 @@ func (s *Servico) DeleteByID(pessoaID int) error {
 		}
 	}
 	if indexDelete < 0 {
-		return fmt.Errorf("Não há nenhuma pessoa com o ID fornecido em nosso banco de dados")
+		return fmt.Errorf("Não há pessoa com o ID fornecido")
 	}
 
-	s.pessoas.Pessoas = append(s.pessoas.Pessoas[:indexDelete], s.pessoas.Pessoas[indexDelete+1:]...)
+	s.pessoas.Pessoas = append(
+		s.pessoas.Pessoas[:indexDelete],
+		s.pessoas.Pessoas[indexDelete+1:]...,
+	)
 
 	return s.salvaArquivo()
 }
