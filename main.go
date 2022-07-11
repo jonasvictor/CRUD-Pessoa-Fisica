@@ -19,7 +19,7 @@ func main() {
 	}
 
 	http.HandleFunc("/pessoa/", func(w http.ResponseWriter, r *http.Request) {
-
+		// Adiciona o cadastro da pessoa
 		if r.Method == "POST" {
 			var pessoa dominio.Pessoa
 			err := json.NewDecoder(r.Body).Decode(&pessoa)
@@ -47,6 +47,7 @@ func main() {
 		}
 
 		if r.Method == "PUT" {
+			// Atualiza os dados de cadastro da pessoa
 			var pessoa dominio.Pessoa
 			err := json.NewDecoder(r.Body).Decode(&pessoa)
 			if err != nil {
@@ -60,7 +61,6 @@ func main() {
 				return
 			}
 
-			// Atualizar/Editar cadastro das pessoas
 			err = sercicoPessoa.Update(pessoa)
 			if err != nil {
 				fmt.Printf("Erro ao tentar atualizar a pessoa: %s\n", err.Error())
@@ -110,6 +110,7 @@ func main() {
 		}
 
 		if r.Method == "DELETE" {
+			// Remove cadastro da pessoa
 			path := strings.TrimPrefix(r.URL.Path, "/pessoa/")
 			if path == "" {
 				http.Error(w, "O ID deve ser fornecido no URL", http.StatusBadRequest)
@@ -120,7 +121,6 @@ func main() {
 					http.Error(w, "ID fornecido é inválido. O ID da pessoa deve ser um número inteiro", http.StatusBadRequest)
 					return
 				}
-				// Delete pessoa
 				err = sercicoPessoa.DeleteByID(pessoaID)
 				if err != nil {
 					fmt.Printf("Erro ao tentar deletar o cadastro da pessoa: %s\n", err.Error())
@@ -135,7 +135,6 @@ func main() {
 
 		}
 
-		//http.Error(w, "Não implementado", http.StatusInternalServerError)
 	})
 
 	http.ListenAndServe(":8080", nil)

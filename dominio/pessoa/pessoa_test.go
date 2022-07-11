@@ -10,7 +10,6 @@ import (
 	"testing"
 )
 
-// Define
 type Pessoa struct {
 	Results []struct {
 		ID             int    `json:"id"`
@@ -23,7 +22,7 @@ type Pessoa struct {
 	Status string `json:"status"`
 }
 
-// Test do Post
+// Test do Post/ Criar cadastro da pessoa
 func TestCreate(t *testing.T) {
 
 	t.Run("retorna o cadastro da pessoa como JSON, se não houver ID já existente", func(t *testing.T) {
@@ -31,11 +30,11 @@ func TestCreate(t *testing.T) {
 			"http://localhost:8080/pessoa/",
 			"application/json",
 			bytes.NewReader([]byte(
-				`{"id": 50, 
-				"nome": "Jonas",
-				"endereco": "Rua Principal",
+				`{"id": 10, 
+				"nome": "jonas Victor Alves da Silva",
+				"endereco": "Av.Principal, 100, RT-PB",
 				"data-de-nascimento": "09/03/1997",
-				"cpf": "989.878.767-10",
+				"cpf": "987.654.321-02",
 				"telefone": 83987654321}`)))
 
 		if err != nil {
@@ -66,8 +65,8 @@ func TestCreate(t *testing.T) {
 			"application/json",
 			bytes.NewReader([]byte(
 				`{"id": 0, 
-				"nome": "Jonas",
-				"endereco": "Rua Principal",
+				"nome": "Jonas Victor",
+				"endereco": "Rua Principal JP-PB",
 				"data-de-nascimento": "09/03/1997",
 				"cpf": "989.878.767-10",
 				"telefone": 83987654321}`)))
@@ -98,7 +97,7 @@ func TestCreate(t *testing.T) {
 			"http://localhost:8080/pessoa/",
 			"application/json",
 			bytes.NewReader([]byte(
-				`{"id": -10, 
+				`{"id": -20, 
 				"nome": "Jonas",
 				"endereco": "Rua Principal",
 				"data-de-nascimento": "09/03/1997",
@@ -131,7 +130,7 @@ func TestCreate(t *testing.T) {
 			"http://localhost:8080/pessoa/",
 			"application/json",
 			bytes.NewReader([]byte(
-				`{"id": 20, 
+				`{"id": 60, 
 				"nome": "Jonas",
 				"endereco": "",
 				"data-de-nascimento": "",
@@ -164,7 +163,7 @@ func TestCreate(t *testing.T) {
 			"http://localhost:8080/pessoa/",
 			"application/json",
 			bytes.NewReader([]byte(
-				`{"id": 30, 
+				`{"id": 40, 
 				"nome": "Jonas",
 				"endereco": "Rua Principal",
 				"data-de-nascimento": "09/03/1997",
@@ -291,7 +290,7 @@ func TestGetByID(t *testing.T) {
 	})
 
 	t.Run("não retorna dados cadastrados se o ID inofrmado não estiver cadastrado", func(t *testing.T) {
-		resp, err := http.Get("http://localhost:8080/pessoa/1000")
+		resp, err := http.Get("http://localhost:8080/pessoa/100")
 		if err != nil {
 			t.Error(err)
 		}
@@ -363,13 +362,13 @@ func TestUpdate(t *testing.T) {
 		}
 	})
 
-	t.Run("não atualiza os dados da pessoa se o ID não estivar cadastrado", func(t *testing.T) {
+	t.Run("não atualiza os dados da pessoa se o ID não estiver cadastrado", func(t *testing.T) {
 		req, err := http.NewRequest(
 			"PUT",
 			"http://localhost:8080/pessoa/",
 			bytes.NewBuffer([]byte(
-				`{"id": 500, 
-				"nome": "Laynne",
+				`{"id": 200, 
+				"nome": "Lay",
 				"endereco": "Rua Principal",
 				"data-de-nascimento": "09/03/1997",
 				"cpf": "999.999.999-99",

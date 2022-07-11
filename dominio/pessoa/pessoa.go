@@ -75,6 +75,7 @@ func criaArquivoVazio(dbFilePath string) error {
 }
 
 func (s Servico) campoVazio(pessoa dominio.Pessoa) bool {
+	// Verifica se todos os campos foram preechidos
 	if pessoa.NomeCompleto == "" || pessoa.Endereco == "" || pessoa.DataNascimento == "" || pessoa.Cpf == "" || pessoa.Telefone == 0 {
 		return true
 	}
@@ -82,6 +83,7 @@ func (s Servico) campoVazio(pessoa dominio.Pessoa) bool {
 }
 
 func (s Servico) quantDigitos(pessoa dominio.Pessoa) bool {
+	// Verifica se telefone os 11 dígitos do telefone foram preechidos
 	digitosTelefone := strconv.Itoa(pessoa.Telefone)
 	if pessoa.Telefone != 0 {
 		if len(digitosTelefone) != 11 {
@@ -92,7 +94,7 @@ func (s Servico) quantDigitos(pessoa dominio.Pessoa) bool {
 }
 
 func (s *Servico) Create(pessoa dominio.Pessoa) error {
-	// Verificar se a pessoa já existe, se já existe então retorna um erro
+	// Verifica se a pessoa já existe, se já existir, então retorna um erro
 	if s.existe(pessoa) {
 		return fmt.Errorf("Erro ao tentar criar pessoa. Já existe uma pessoa com este ID cadastrado")
 	}
@@ -100,12 +102,11 @@ func (s *Servico) Create(pessoa dominio.Pessoa) error {
 		return fmt.Errorf("Erro ao tentar criar pessoa, dados insuficientes")
 	}
 
-	// Verifica qunatidade de números inseridos em telefone
+	// Verifica quantidade de números inseridos em telefone
 	if s.quantDigitos(pessoa) {
 		return fmt.Errorf("Erro ao tentar criar pessoa. Número de telefone incompleto/incorreto")
 	}
 
-	// Adiciona a pessoa na slice de pessoas
 	s.pessoas.Pessoas = append(s.pessoas.Pessoas, pessoa)
 
 	// Salvo o arquivo
@@ -128,6 +129,7 @@ func (s Servico) existe(pessoa dominio.Pessoa) bool {
 }
 
 func (s Servico) salvaArquivo() error {
+	// Salva os dados no cadastro
 	todasPessoasJSON, err := json.Marshal(s.pessoas)
 	if err != nil {
 		return fmt.Errorf("Erro ao tentar codificar pessoas como json: %s", err.Error())
@@ -140,6 +142,7 @@ func (s Servico) List() dominio.Pessoas {
 }
 
 func (s Servico) GetByID(pessoaID int) (dominio.Pessoa, error) {
+	// Busca cadastro de pessoa pelo ID informado
 	for _, pessoaAtual := range s.pessoas.Pessoas {
 		if pessoaAtual.ID == pessoaID {
 			return pessoaAtual, nil
@@ -149,6 +152,7 @@ func (s Servico) GetByID(pessoaID int) (dominio.Pessoa, error) {
 }
 
 func (s *Servico) Update(pessoa dominio.Pessoa) error {
+	// Atualiza o cadastro da pessoa pelo ID informado
 	var indexUpdate int = -1
 	for index, pessoaAtual := range s.pessoas.Pessoas {
 		if pessoaAtual.ID == pessoa.ID {
@@ -166,6 +170,7 @@ func (s *Servico) Update(pessoa dominio.Pessoa) error {
 }
 
 func (s *Servico) DeleteByID(pessoaID int) error {
+	// Deleta cadastro da pessoa pelo ID informado
 	var indexDelete int = -1
 	for index, pessoaAtual := range s.pessoas.Pessoas {
 		if pessoaAtual.ID == pessoaID {
