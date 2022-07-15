@@ -96,7 +96,7 @@ func (s Servico) quantDigitos(pessoa dominio.Pessoa) bool {
 func (s *Servico) Create(pessoa dominio.Pessoa) error {
 	// Verifica se a pessoa já existe, se já existir, então retorna um erro
 	if s.existe(pessoa) {
-		return fmt.Errorf("Erro ao tentar criar pessoa. Já existe uma pessoa com este ID cadastrado")
+		return fmt.Errorf("Já existe uma pessoa com este ID cadastrado")
 	}
 	if s.campoVazio(pessoa) {
 		return fmt.Errorf("Erro ao tentar criar pessoa, dados insuficientes")
