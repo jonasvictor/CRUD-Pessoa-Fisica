@@ -76,7 +76,7 @@ func TestCreate(t *testing.T) {
 	}
 }
 
-// Não deve cadastrar com o ID zero"
+// Não deve cadastrar com o ID zero
 func TestIDZero(t *testing.T) {
 	resp, err := http.Post(
 		"http://localhost:8080/pessoa/",
@@ -106,7 +106,7 @@ func TestIDZero(t *testing.T) {
 	}
 }
 
-// Não deve cadastrar com o ID negativo"
+// Não deve cadastrar com o ID negativo
 func TestCreateIDNegativo(t *testing.T) {
 	resp, err := http.Post(
 		"http://localhost:8080/pessoa/",
@@ -248,7 +248,7 @@ func TestGetByID(t *testing.T) {
 	}
 }
 
-//
+// Não retorna dados cadastrados se o ID inofrmado não estiver cadastrado
 func TestGetByIDErro(t *testing.T) {
 	resp, err := http.Get("http://localhost:8080/pessoa/50")
 	if err != nil {
