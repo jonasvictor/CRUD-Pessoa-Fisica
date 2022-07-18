@@ -36,7 +36,7 @@ func TestCreate(t *testing.T) {
 				"telefone": 83987654321}`)))
 
 	if err != nil {
-		t.Errorf("Não foi possível fazer a requisição: %v", err)
+		t.Errorf("Não foi possível: %v", err)
 	}
 
 	defer resp.Body.Close()
@@ -90,7 +90,7 @@ func TestIDZero(t *testing.T) {
 				"telefone": 83987654321}`)))
 
 	if err != nil {
-		t.Errorf("Não foi possível fazer a requisição: %v", err)
+		t.Errorf("Não foi possível: %v", err)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
@@ -120,7 +120,7 @@ func TestCreateIDNegativo(t *testing.T) {
 				"telefone": 83987654321}`)))
 
 	if err != nil {
-		t.Errorf("Não foi possível fazer a requisição: %v", err)
+		t.Errorf("Não foi possível: %v", err)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
@@ -150,7 +150,7 @@ func TestCampoVazio(t *testing.T) {
 				"telefone": 83987654321}`)))
 
 	if err != nil {
-		t.Errorf("Não foi possível fazer a requisição: %v", err)
+		t.Errorf("Não foi possível: %v", err)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
@@ -180,7 +180,7 @@ func TestQuantDigitos(t *testing.T) {
 				"telefone": 839876543}`)))
 
 	if err != nil {
-		t.Errorf("Não foi possível fazer a requisição: %v", err.Error())
+		t.Errorf("Não foi possível: %v", err.Error())
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
@@ -377,13 +377,11 @@ func TestDelete(t *testing.T) {
 
 	req, err := http.NewRequest("DELETE", "http://localhost:8080/pessoa/50", nil)
 	if err != nil {
-		t.Error("*******************************")
 		t.Error(err)
 	}
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		t.Error("------------------------------")
 		t.Error(err)
 	}
 	defer resp.Body.Close()
@@ -428,13 +426,11 @@ func TestDelete(t *testing.T) {
 func TestDeleteErro(t *testing.T) {
 	req, err := http.NewRequest("DELETE", "http://localhost:8080/pessoa/80", nil)
 	if err != nil {
-		t.Error("*******************************")
 		t.Error(err)
 	}
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		t.Error("------------------------------")
 		t.Error(err)
 	}
 

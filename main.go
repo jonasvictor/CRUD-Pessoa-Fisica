@@ -76,7 +76,7 @@ func main() {
 			// Lista todas as pessoas cadastradas
 			path := strings.TrimPrefix(r.URL.Path, "/pessoa/")
 			if path == "" {
-				w.Header().Set("Content-Type", "application/json") // Antes de codar
+				w.Header().Set("content-type", "application/json") // Antes de codar
 				w.WriteHeader(http.StatusOK)
 
 				err := json.NewEncoder(w).Encode(sercicoPessoa.List())
@@ -97,7 +97,7 @@ func main() {
 					http.Error(w, err.Error(), http.StatusNotFound)
 					return
 				}
-				w.Header().Set("Content-Type", "application/json")
+				w.Header().Set("content-type", "application/json")
 				w.WriteHeader(http.StatusOK)
 				err = json.NewEncoder(w).Encode(pessoa)
 				if err != nil {
