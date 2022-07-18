@@ -48,7 +48,7 @@ func TestCreate(t *testing.T) {
 	}
 
 	if resp.StatusCode == 201 {
-		resp, err := http.Get("http://localhost:8080/pessoa/10")
+		resp, err := http.Get("http://localhost:8080/pessoa/50")
 		if err != nil {
 			t.Error(err)
 		}
@@ -101,7 +101,7 @@ func TestIDZero(t *testing.T) {
 		t.Errorf("Obrigatório preencher todos os campos: %v", err)
 	}
 
-	if resp.StatusCode == 400 {
+	if resp.StatusCode != 400 {
 		t.Error(string(body))
 	}
 }
@@ -131,7 +131,7 @@ func TestCreateIDNegativo(t *testing.T) {
 		t.Errorf("Obrigatório preencher todos os campos: %v", err)
 	}
 
-	if resp.StatusCode == 400 {
+	if resp.StatusCode != 400 {
 		t.Error(string(body))
 	}
 }
@@ -161,7 +161,7 @@ func TestCampoVazio(t *testing.T) {
 		t.Errorf("Obrigatório preencher todos os campos: %v", err)
 	}
 
-	if resp.StatusCode == 500 {
+	if resp.StatusCode != 500 {
 		t.Errorf("Não foi possível criar: %v", string(body))
 	}
 }
@@ -191,7 +191,7 @@ func TestQuantDigitos(t *testing.T) {
 		t.Errorf("Obrigatório preencher todos os campos: %v", err)
 	}
 
-	if resp.StatusCode == 500 {
+	if resp.StatusCode != 500 {
 		t.Errorf("Não foi possível criar: %v", string(body))
 	}
 
@@ -367,7 +367,7 @@ func TestUpdateErro(t *testing.T) {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode == 500 {
+	if resp.StatusCode != 500 {
 		t.Errorf("Não foi possível editar os dados: %v", string(body))
 	}
 }
@@ -375,7 +375,7 @@ func TestUpdateErro(t *testing.T) {
 // Remove o cadastro da pessoa pelo ID informado
 func TestDelete(t *testing.T) {
 
-	req, err := http.NewRequest("DELETE", "http://localhost:8080/pessoa/50", nil)
+	req, err := http.NewRequest("DELETE", "http://localhost:8080/pessoa/20", nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -394,30 +394,7 @@ func TestDelete(t *testing.T) {
 
 	defer resp.Body.Close()
 
-	if resp.StatusCode == 200 {
-		resp, err := http.Get("http://localhost:8080/pessoa/50")
-		if err != nil {
-			t.Error(err)
-		}
-		defer resp.Body.Close()
-
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Println(err)
-			t.Error(err)
-		}
-
-		log.Println(string(body))
-		pess := Pessoa{}
-		err = json.Unmarshal([]byte(string(body)), &pess)
-
-		if err != nil {
-			log.Println(err)
-		}
-		if resp.StatusCode != 200 {
-			t.Errorf("Não foi possível buscar: %v", string(body))
-		}
-	} else {
+	if resp.StatusCode != 200 {
 		t.Errorf("Não foi possível buscar: %v", string(body))
 	}
 }
@@ -442,7 +419,7 @@ func TestDeleteErro(t *testing.T) {
 
 	defer resp.Body.Close()
 
-	if resp.StatusCode == 500 {
+	if resp.StatusCode != 500 {
 		t.Errorf("Não foi possível remover: %v", string(body))
 	}
 }
