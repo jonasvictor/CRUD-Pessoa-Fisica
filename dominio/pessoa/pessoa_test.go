@@ -395,7 +395,7 @@ func TestDelete(t *testing.T) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		t.Errorf("Não foi possível buscar: %v", string(body))
+		t.Errorf("Não foi possível remover: %v", string(body))
 	}
 }
 
